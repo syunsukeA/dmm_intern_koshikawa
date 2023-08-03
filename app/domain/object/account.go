@@ -13,10 +13,10 @@ import (
 
 type Account struct {
 	// The internal ID of the account
-	ID int64 `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty" db:"id"`
 
 	// The username of the account
-	Username string `json:"username,omitempty"`
+	Username string `json:"username,omitempty" db:"username"`
 
 	// The username of the account
 	PasswordHash string `json:"-" db:"password_hash"`
@@ -25,13 +25,13 @@ type Account struct {
 	DisplayName *string `json:"display_name,omitempty" db:"display_name"`
 
 	// URL to the avatar image
-	Avatar *string `json:"avatar,omitempty"`
+	Avatar *string `json:"avatar,omitempty" db:"avatar"`
 
 	// URL to the header image
-	Header *string `json:"header,omitempty"`
+	Header *string `json:"header,omitempty" db:"header"`
 
 	// Biography of user
-	Note *string `json:"note,omitempty"`
+	Note *string `json:"note,omitempty" db:"note"`
 
 	// The time the account was created
 	CreateAt time.Time `json:"create_at,omitempty" db:"create_at"`
