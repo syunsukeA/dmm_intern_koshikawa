@@ -17,11 +17,15 @@ func (h *handler) ShowHome(w http.ResponseWriter, r *http.Request) {
 func (h *handler) ShowPublic(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	// GETパラメータの取得
-	// ToDo: パラメータが不十分な場合の処理
 	str_only_media := r.URL.Query().Get("only_media")
 	str_max_id 	  := r.URL.Query().Get("max_id")
 	str_since_id  := r.URL.Query().Get("since_id")
 	str_limit 	  := r.URL.Query().Get("limit")
+	// 初期値の設定
+	if len(str_limit) <= 0 {
+		str_limit = "40"
+	}
+	// エラーハンドリング（paramが指定されていない等の不正リクエストの検出）
 	only_media, err := strconv.ParseBool(str_only_media)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -42,6 +46,10 @@ func (h *handler) ShowPublic(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	// 最大値の判定
+	if limit > 80 {
+		limit = 80
+	}
 	timeline, err := h.tr.FindByID(ctx, only_media, max_id, since_id, limit)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -49,7 +57,7 @@ func (h *handler) ShowPublic(w http.ResponseWriter, r *http.Request) {
 	}
 	// FindByID()でtimelineが空の場合は404を返す
 	if timeline == nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, "Not Found.", http.StatusNotFound)
 		return
 	}
 
