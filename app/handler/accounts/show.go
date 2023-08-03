@@ -20,7 +20,7 @@ func (h *handler) Show(w http.ResponseWriter, r *http.Request) {
 	}
 	// FindByUsername()でaccountが見つからない場合は404を返す
 	if account == nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, "Account not found.", http.StatusNotFound)
 		return
 	}
 
