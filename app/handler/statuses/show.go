@@ -26,7 +26,7 @@ func (h *handler) Show(w http.ResponseWriter, r *http.Request) {
 	}
 	// FindByID()でstatusが見つからない場合は404を返す
 	if status == nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, "Not Found", http.StatusNotFound)
 		return
 	}
 
