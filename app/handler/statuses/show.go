@@ -1,8 +1,8 @@
-package status
+package statuses
 
 import (
 	"encoding/json"
-	_"log"
+	_ "log"
 	"net/http"
 	"strconv"
 
