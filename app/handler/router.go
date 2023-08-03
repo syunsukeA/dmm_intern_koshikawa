@@ -30,7 +30,7 @@ func NewRouter(ar repository.Account, sr repository.Status) http.Handler {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Mount("/v1/accounts", accounts.NewRouter(ar))
-	r.Mount("/v1/status", status.NewRouter(sr))
+	r.Mount("/v1/statuses", statuses.NewRouter(ar, sr))
 	r.Mount("/v1/health", health.NewRouter())
 
 	return r
