@@ -20,7 +20,7 @@ func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var req AddRequest
 	if err = json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest) // BadRequest返すべきなのか？
 		return
 	}
 
@@ -34,7 +34,7 @@ func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 	// DBにアカウント情報を保存
 	account, err = h.ar.SaveAccount(ctx, account)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
