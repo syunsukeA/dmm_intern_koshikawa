@@ -5,7 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
+	_"log"
+	_"time"
 	"yatter-backend-go/app/domain/object"
 	"yatter-backend-go/app/domain/repository"
 
@@ -39,11 +40,9 @@ func (r *status) FindByID(ctx context.Context, id int64) (*object.Status, error)
 	return entity, nil
 }
 
-func (r *status) SaveStatus(ctx context.Context, obj_status *object.Status) (*object.Status, error) {
-	// created_atのフィールドを追加
-	obj_status.CreateAt = time.Now()
+func (r *status) SaveStatus(ctx context.Context, so *object.Status) (*object.Status, error) {
 	// obj_statusの情報を基にDBに追加
-	err := r.db.QueryRowxContext(ctx, "insert into status(content, create_at) values(?, ?)", obj_status.Content, obj_status.CreateAt).Err()
+	err := r.db.QueryRowxContext(ctx, "insert into status(account_id, content) values(?, ?)", so.AccountID, so.Content).Err()
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -51,5 +50,5 @@ func (r *status) SaveStatus(ctx context.Context, obj_status *object.Status) (*ob
 		return nil, fmt.Errorf("failed to add status to db: %w", err)
 	}
 	// obj_accountを返す
-	return obj_status, nil
+	return so, nil
 }

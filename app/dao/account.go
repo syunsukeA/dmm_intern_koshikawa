@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
+	_"time"
 	"yatter-backend-go/app/domain/object"
 	"yatter-backend-go/app/domain/repository"
 
@@ -39,11 +39,9 @@ func (r *account) FindByUsername(ctx context.Context, username string) (*object.
 	return entity, nil
 }
 
-func (r *account) SaveAccount(ctx context.Context, obj_account *object.Account) (*object.Account, error) {
-	// created_atのフィールドを追加
-	obj_account.CreateAt = time.Now()
+func (r *account) SaveAccount(ctx context.Context, ao *object.Account) (*object.Account, error) {
 	// obj_accountの情報を基にDBに追加
-	err := r.db.QueryRowxContext(ctx, "insert into account(username, password_hash, create_at) values(?, ?, ?)", obj_account.Username, obj_account.PasswordHash, obj_account.CreateAt).Err()
+	err := r.db.QueryRowxContext(ctx, "insert into account(username, password_hash) values(?, ?)", ao.Username, ao.PasswordHash).Err()
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -51,5 +49,5 @@ func (r *account) SaveAccount(ctx context.Context, obj_account *object.Account) 
 		return nil, fmt.Errorf("failed to add account to db: %w", err)
 	}
 	// obj_accountを返す
-	return obj_account, nil
+	return ao, nil
 }
