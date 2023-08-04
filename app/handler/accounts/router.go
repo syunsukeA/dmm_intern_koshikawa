@@ -19,6 +19,7 @@ func NewRouter(ar repository.Account) http.Handler {
 	h := &handler{ar}
 	r.Post("/", h.Create)
 	r.Get("/{username}", h.Show)
+	r.Post("/{username}/follow", h.Follow)
 
 	return r
 }
