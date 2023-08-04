@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	_"log"
-	_"time"
+	"log"
+	_ "time"
 	"yatter-backend-go/app/domain/object"
 	"yatter-backend-go/app/domain/repository"
 
@@ -51,4 +51,40 @@ func (r *status) SaveStatus(ctx context.Context, so *object.Status) (*object.Sta
 	}
 	// obj_accountを返す
 	return so, nil
+}
+
+// DeleteStatus : authのaccountIDと消したいstatusのIDが一致していたらstatusを消す
+func (r *status) DeleteStatus(ctx context.Context, id int64, account_id int64) (*object.Status, error) {
+	entity := new(object.Status)
+	var err error
+	var res sql.Result
+	// dbコード参照
+	tx, _ := r.db.Begin()
+	defer func() {
+		switch r := recover(); {
+		case r != nil:
+			tx.Rollback()
+		case err != nil:
+			tx.Rollback()
+		}
+	}()
+	// トランザクション接続で操作を実行
+	if res, err = tx.Exec(`delete from status where id=? and account_id=?`, id, account_id); err != nil {
+		return nil, fmt.Errorf("failed to delete from db: %w", err)
+	}
+	n_affected, err := res.RowsAffected()
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete from db: %w", err)
+	}
+	// 操作完了したらトランザクションをコミット
+	if err = tx.Commit(); err != nil {
+		// 失敗したら終了処理へ
+		return nil, fmt.Errorf("failed to delete from db: %w", err)
+	}
+	log.Println(n_affected)
+	if n_affected <= 0 {
+		return nil, nil
+	}
+
+	return entity, nil
 }
