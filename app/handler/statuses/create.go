@@ -1,21 +1,24 @@
-package accounts
+package statuses
 
 import (
 	"encoding/json"
+	_"log"
 	"net/http"
 
 	"yatter-backend-go/app/domain/object"
+	"yatter-backend-go/app/handler/auth"
 )
 
-// Request body for `POST /v1/accounts`
+// Request body for `POST /v1/status`
 type AddRequest struct {
-	Username string
-	Password string
+	AccountID int64
+	Content   string
 }
 
-// Handle request for `POST /v1/accounts`
+// Handle request for `POST /v1/status`
 func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	ao := auth.AccountOf(r)
 	var err error
 
 	var req AddRequest
@@ -24,22 +27,19 @@ func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account := new(object.Account)
-	account.Username = req.Username
-	if err = account.SetPassword(req.Password); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	status := new(object.Status)
+	status.Content = req.Content
+	status.AccountID = ao.ID
 
-	// DBにアカウント情報を保存
-	account, err = h.ar.SaveAccount(ctx, account)
+	// DBにstatus情報を保存
+	status, err = h.sr.SaveStatus(ctx, status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(account); err != nil {
+	if err := json.NewEncoder(w).Encode(status); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
